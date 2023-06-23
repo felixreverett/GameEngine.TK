@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
@@ -39,6 +40,13 @@ namespace GameEngine.TK.Core
                 Render(gameTime);
                 gameWindow.SwapBuffers();
             };
+
+            // Resize handling
+            gameWindow.Resize += (ResizeEventArgs) =>
+            {
+                GL.Viewport(0, 0, gameWindow.Size.X, gameWindow.Size.Y);
+            };
+
             gameWindow.Run();
         }
 
