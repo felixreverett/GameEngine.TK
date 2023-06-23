@@ -1,4 +1,5 @@
 ﻿using GameEngine.TK.Core;
+using GameEngine.TK.Core.Rendering;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -21,7 +22,7 @@ namespace GameEngine.TK
         private int _vertexBufferObject;
         private int _vertexArrayObject;
 
-        private int _shaderHandle;
+        private Shader _shader;
 
         protected override void Initialize()
         {
@@ -30,57 +31,8 @@ namespace GameEngine.TK
 
         protected override void LoadContent()
         {
-            string vertexShader = @"
-            #version 330 core
-            layout (location = 0) in vec3 aPosition;
-            layout (location = 1) in vec3 aColor;
-            out vec4 vertexColor;
-
-            void main() 
-            {
-                vertexColor = vec4(aColor.rgb, 1.0);
-                gl_Position = vec4(aPosition.xyz, 1.0);
-            }";
-
-            string fragmentShader = @"
-            #version 330 core
-            out vec4 color;
-            in vec4 vertexColor;
-
-            void main() 
-            {
-                color = vertexColor;
-            }";
-
-            int vertexShaderId = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShaderId, vertexShader); // Give it the source
-            GL.CompileShader(vertexShaderId); // Compile the shader
-            GL.GetShader(vertexShaderId, ShaderParameter.CompileStatus, out var vertexShaderCompilationCode);
-            if (vertexShaderCompilationCode != (int)All.True)
-            {
-                Console.WriteLine(GL.GetShaderInfoLog(vertexShaderId));
-            }
-
-            int fragmentShaderId = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShaderId, fragmentShader); // Specify source
-            GL.CompileShader(fragmentShaderId); // Compile the shader
-            GL.GetShader(fragmentShaderId, ShaderParameter.CompileStatus, out var fragmentShaderCompilationCode);
-            if (fragmentShaderCompilationCode != (int)All.True)
-            {
-                Console.WriteLine(GL.GetShaderInfoLog(fragmentShaderId));
-            }
-
-            // Create actual shader and link them to pass information
-            _shaderHandle = GL.CreateProgram();
-            GL.AttachShader(_shaderHandle, vertexShaderId);
-            GL.AttachShader(_shaderHandle, fragmentShaderId);
-            GL.LinkProgram(_shaderHandle);
-
-            // Cleanup
-            GL.DetachShader(_shaderHandle, vertexShaderId);
-            GL.DetachShader(_shaderHandle, fragmentShaderId);
-            GL.DeleteShader(vertexShaderId);
-            GL.DeleteShader(fragmentShaderId);
+            _shader = new(Shader.ParseShader("Resources/Shaders/Default.glsl"));
+            _shader.CompileShader();
 
             _vertexBufferObject = GL.GenBuffer(); // Prep buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject); // Bind buffer
@@ -105,10 +57,7 @@ namespace GameEngine.TK
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(Color4.CornflowerBlue);
-
-            // Do this before binding and drawing arrays
-            GL.UseProgram(_shaderHandle);
-
+            _shader.Use();
             GL.BindVertexArray(_vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3); 
         }
