@@ -1,4 +1,5 @@
-﻿using OpenTK.Windowing.Common;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
 namespace GameEngine.TK.Core
@@ -16,6 +17,8 @@ namespace GameEngine.TK.Core
             WindowTitle = windowTitle;
             InitialWindowWidth = initialWindowWidth;
             InitialWindowHeight = initialWindowHeight;
+            _nativeWindowSettings.Size = new Vector2i(InitialWindowWidth, InitialWindowHeight);
+            _nativeWindowSettings.Title = windowTitle;
         }
 
         public void Run()
