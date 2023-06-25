@@ -7,7 +7,7 @@ namespace GameEngine.TK
     {
         static void Main(string[] args)
         {
-            Game game = new TestGame("Test", 800, 600);
+            Game game = new TextureTest("Test", 800, 600);
             game.Run();
         }
     }
