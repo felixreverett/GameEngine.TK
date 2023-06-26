@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using GameEngine.TK.Core.Management;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -20,12 +21,16 @@ namespace GameEngine.TK.Core
             InitialWindowHeight = initialWindowHeight;
             _nativeWindowSettings.Size = new Vector2i(InitialWindowWidth, InitialWindowHeight);
             _nativeWindowSettings.Title = windowTitle;
+            _nativeWindowSettings.API = ContextAPI.OpenGL;
+
+            _gameWindowSettings.RenderFrequency = 60.0;
+            _gameWindowSettings.UpdateFrequency = 60.0;
         }
 
         public void Run()
         {
             Initialize();
-            using GameWindow gameWindow = new GameWindow(_gameWindowSettings, _nativeWindowSettings);
+            using GameWindow gameWindow = DisplayManager.Instance.CreateWindow(_gameWindowSettings, _nativeWindowSettings);
             GameTime gameTime = new();
             gameWindow.Load += LoadContent;
             gameWindow.UpdateFrame += (FrameEventArgs eventArgs) =>
