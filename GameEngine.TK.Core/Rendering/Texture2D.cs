@@ -6,11 +6,26 @@ namespace GameEngine.TK.Core.Rendering
     {
         private bool _disposed;
         public int Handle { get; private set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public TextureUnit TextureSlot { get; set; } = TextureUnit.Texture0;
 
         public Texture2D(int handle)
         {
             Handle = handle;
         }
+
+        public Texture2D(int handle, int width, int height) : this(handle)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public Texture2D(int handle, int width, int height, TextureUnit textureSlot) : this(handle, width, height)
+        {
+            TextureSlot = textureSlot;
+        }
+        
 
         ~Texture2D()
         {

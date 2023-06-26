@@ -7,14 +7,23 @@ namespace GameEngine.TK.Core.Management
 {
     public static class TextureFactory
     {
+        private static int _textureCursor = 0;
+
         public static Texture2D Load(string textureName)
         {
             int handle = GL.GenTexture();
-            GL.ActiveTexture(TextureUnit.Texture0); // Texture units
+            Enum.TryParse(typeof(TextureUnit), $"Texture{_textureCursor}", out var result);
+            if (result == null)
+            {
+                throw new Exception($"Exceeded maximum texture slots OpenGL can natively support. Count {_textureCursor}");
+            }
+            TextureUnit textureUnit = ((TextureUnit)result);
+
+            GL.ActiveTexture(textureUnit); // Set the texture units
             GL.BindTexture(TextureTarget.Texture2D, handle); // Bind our texture
             using var image = Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(textureName);
 
-            image.Mutate(i => i.RotateFlip(RotateMode.None, FlipMode.Vertical));
+            image.Mutate(i => i.RotateFlip(RotateMode.Rotate90, FlipMode.None));
 
             var data = image.DangerousTryGetSinglePixelMemory(out Memory<Rgba32> memory);
 
@@ -31,7 +40,10 @@ namespace GameEngine.TK.Core.Management
             // Auto-Generate Mipmaps (probably won't need for 2D game)
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            return new Texture2D(handle);
+            // Increment cursor
+            _textureCursor++;
+
+            return new Texture2D(handle, image.Width, image.Height, textureUnit);
         }
     }
 }
