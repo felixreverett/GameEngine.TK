@@ -7,7 +7,7 @@ namespace GameEngine.TK
     {
         static void Main(string[] args)
         {
-            Game game = new BufferAbstraction("Test", 800, 600);
+            Game game = new TextureWithColors("Test", 800, 600);
             game.Run();
         }
     }
